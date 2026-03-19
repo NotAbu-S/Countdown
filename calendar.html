@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Montserrat:900">
+  <title>Calendar</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --ink: #183059;
+      --muted: #a9b3c3;
+      --surface: #eeeeee;
+      --accent: #276FBF;
+      --today: #F0A202;
+      --shadow: 0 12px 30px rgba(24, 48, 89, 0.12);
+    }
+
+    body {
+      background: var(--bg);
+      margin: 0;
+      padding: 28px;
+      font-family: 'Lato', sans-serif;
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+    }
+
+    .calendar {
+      width: min(360px, 92vw);
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 0.7em;
+    }
+
+    .month {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.4em;
+      letter-spacing: 1px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      font-size: 1.2em;
+      padding: 6px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover {
+      background: #ffffff;
+    }
+
+    .weekdays, .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .weekdays div {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.65em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .days {
+      margin-top: 8px;
+    }
+
+    .day {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: #ffffff;
+      font-size: 0.85em;
+      font-weight: 700;
+    }
+
+    .day.outside {
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .day.today {
+      background: var(--today);
+      color: #ffffff;
+    }
+
+    @media (max-width: 420px) {
+      body { padding: 16px; }
+      .calendar { width: 94vw; padding: 14px; }
+      .day { height: 32px; font-size: 0.8em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="calendar" id="calendar">
+    <div class="cal-header">
+      <button class="nav-btn" id="prev" aria-label="Previous month">‹</button>
+      <div class="month" id="monthLabel"></div>
+      <button class="nav-btn" id="next" aria-label="Next month">›</button>
+    </div>
+    <div class="weekdays" id="weekdays"></div>
+    <div class="days" id="days"></div>
+  </div>
+
+  <script>
+    const monthLabel = document.getElementById('monthLabel');
+    const daysEl = document.getElementById('days');
+    const weekdaysEl = document.getElementById('weekdays');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+
+    const weekdayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    weekdaysEl.innerHTML = weekdayNames.map(d => "<div>" + d + "</div>").join("");
+
+    let view = new Date();
+
+    function renderCalendar(date) {
+      const year = date.getFullYear();
+      const month = date.getMonth();
+
+      monthLabel.textContent = date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
+      const firstDay = new Date(year, month, 1);
+      const startDay = firstDay.getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const prevMonthDays = new Date(year, month, 0).getDate();
+
+      const today = new Date();
+      const isThisMonth = today.getFullYear() === year && today.getMonth() === month;
+
+      let cells = [];
+
+      for (let i = startDay - 1; i >= 0; i--) {
+        cells.push({
+          num: prevMonthDays - i,
+          outside: true
+        });
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        cells.push({
+          num: d,
+          today: isThisMonth && d === today.getDate()
+        });
+      }
+
+      while (cells.length % 7 !== 0) {
+        cells.push({
+          num: cells.length - (startDay + daysInMonth) + 1,
+          outside: true
+        });
+      }
+
+      daysEl.innerHTML = cells.map(c => {
+        let cls = 'day';
+        if (c.outside) cls += ' outside';
+        if (c.today) cls += ' today';
+        return "<div class=\"" + cls + "\">" + c.num + "</div>";
+      }).join('');
+    }
+
+    prevBtn.addEventListener('click', () => {
+      view = new Date(view.getFullYear(), view.getMonth() - 1, 1);
+      renderCalendar(view);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      view = new Date(view.getFullYear(), view.getMonth() + 1, 1);
+      renderCalendar(view);
+    });
+
+    renderCalendar(view);
+  </script>
+</body>
+</html>
