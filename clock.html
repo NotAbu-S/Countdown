@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Montserrat:900">
+    <title>Clock</title>
+    <style>
+
+body{
+    background-color: white;
+}
+  
+#clock {
+  color: #eeeeee;
+  text-align: center;
+  text-transform: uppercase;
+  font-family: 'Lato', sans-serif;
+  font-size: .7em;
+  letter-spacing: 5px;
+}
+
+.hours, .minutes {
+  display: inline-block;
+  padding: 20px;
+  width: 100px;
+  border-radius: 5px;
+}
+
+.hours {
+  background: #eeeeee;
+  color: #183059;
+}
+
+.minutes {
+  background: #276FBF;
+}
+
+.numbers {
+  font-family: 'Montserrat', sans-serif;
+  color:  #183059;
+  font-size: 4em;
+  text-align: center;
+}
+
+    </style>
+</head>
+<body>
+    
+<div id="clock">
+
+      <div class="hours"> 
+        <div id="hours" class="numbers"> </div>hours</div> 
+      <div class="minutes"> 
+        <div id="minutes" class="numbers"> </div>minutes</div> 
+
+</div>
+
+</body>
+<script>
+function updateClock() {
+  const now = new Date();
+  let hours = now.getHours();
+  let minutes = now.getMinutes();
+
+  hours = String(hours).padStart(2, '0');
+  minutes = String(minutes).padStart(2, '0');
+
+  document.getElementById("hours").innerHTML = hours;
+  document.getElementById("minutes").innerHTML = minutes;
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+</html>
